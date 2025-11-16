@@ -22,6 +22,14 @@ class Student {
   
   constructor(id, name, studentClass) {
     // Implementasi constructor di sini
+    if (!id) throw new Error("ID tidak boleh kosong");
+    if (!name) throw new Error("Nama tidak boleh kosong");
+    if (!studentClass) throw new Error("Kelas tidak boleh kosong");
+
+    this.id = id;
+    this.name = name;
+    this.class = studentClass;
+    this.grades = {}; // { subject: score }
   }
 
   /**
@@ -32,6 +40,18 @@ class Student {
    */
   addGrade(subject, score) {
     // Implementasi method di sini
+    if (!subject) {
+      console.log("Mata pelajaran tidak boleh kosong.");
+      return false;
+    }
+
+    if (typeof score !== "number" || score < 0 || score > 100) {
+      console.log("Nilai harus berupa angka 0-100.");
+      return false;
+    }
+
+    this.grades[subject] = score;
+    return true;
   }
 
   /**
@@ -41,6 +61,16 @@ class Student {
    */
   getAverage() {
     // Implementasi method di sini
+    const subjects = Object.keys(this.grades);
+
+    if (subjects.length === 0) return 0;
+
+    const total = subjects.reduce(
+      (sum, subject) => sum + this.grades[subject],
+      0
+    );
+
+    return total / subjects.length;
   }
 
   /**
@@ -50,6 +80,8 @@ class Student {
    */
   getGradeStatus() {
     // Implementasi method di sini
+    const avg = this.getAverage();
+    return avg >= 75 ? "Lulus" : "Tidak Lulus";
   }
 
   /**
@@ -58,6 +90,24 @@ class Student {
    */
   displayInfo() {
     // Implementasi method di sini
+    console.log(`\nID: ${this.id}`);
+    console.log(`Nama: ${this.name}`);
+    console.log(`Kelas: ${this.class}`);
+    console.log("Mata Pelajaran:");
+
+    const subjects = Object.keys(this.grades);
+    if (subjects.length === 0) {
+      console.log("  - Belum ada nilai");
+    } else {
+      subjects.forEach((subject) => {
+        console.log(`  - ${subject}: ${this.grades[subject]}`);
+      });
+    }
+
+    const avg = this.getAverage().toFixed(2);
+    console.log(`Rata-rata: ${avg}`);
+    console.log(`Status: ${this.getGradeStatus()}`);
+    console.log("---------------------------");
   }
 }
 
