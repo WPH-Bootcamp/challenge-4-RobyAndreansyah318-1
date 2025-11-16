@@ -20,6 +20,7 @@ class StudentManager {
   
   constructor() {
     // Implementasi constructor di sini
+    this.students = [];
   }
 
   /**
@@ -30,6 +31,17 @@ class StudentManager {
    */
   addStudent(student) {
     // Implementasi method di sini
+    // Cek apakah ID sudah ada
+    const exists = this.students.some((s) => s.id === student.id);
+
+    if (exists) {
+      console.log("Gagal: ID siswa sudah digunakan.");
+      return false;
+    }
+
+    this.students.push(student);
+    console.log("Siswa berhasil ditambahkan!");
+    return true;
   }
 
   /**
@@ -40,6 +52,16 @@ class StudentManager {
    */
   removeStudent(id) {
     // Implementasi method di sini
+    const index = this.students.findIndex((s) => s.id === id);
+
+    if (index === -1) {
+      console.log("Siswa dengan ID tersebut tidak ditemukan.");
+      return false;
+    }
+
+    this.students.splice(index, 1);
+    console.log("Siswa berhasil dihapus.");
+    return true;
   }
 
   /**
@@ -50,6 +72,8 @@ class StudentManager {
    */
   findStudent(id) {
     // Implementasi method di sini
+    const student = this.students.find((s) => s.id === id);
+    return student || null;
   }
 
   /**
@@ -61,6 +85,18 @@ class StudentManager {
    */
   updateStudent(id, data) {
     // Implementasi method di sini
+    const student = this.findStudent(id);
+
+    if (!student) {
+      console.log("Siswa tidak ditemukan.");
+      return false;
+    }
+
+    if (data.name) student.name = data.name;
+    if (data.class) student.class = data.class;
+
+    console.log("Data siswa berhasil diperbarui.");
+    return true;
   }
 
   /**
@@ -69,6 +105,7 @@ class StudentManager {
    */
   getAllStudents() {
     // Implementasi method di sini
+    return this.students;
   }
 
   /**
@@ -79,6 +116,13 @@ class StudentManager {
    */
   getTopStudents(n) {
     // Implementasi method di sini
+    if (this.students.length === 0) return [];
+
+    const sorted = [...this.students].sort(
+      (a, b) => b.getAverage() - a.getAverage()
+    );
+
+    return sorted.slice(0, n);
   }
 
   /**
@@ -87,6 +131,14 @@ class StudentManager {
    */
   displayAllStudents() {
     // Implementasi method di sini
+    if (this.students.length === 0) {
+      console.log("Belum ada data siswa.");
+      return;
+    }
+
+    this.students.forEach((student) => {
+      student.displayInfo();
+    });
   }
 
   /**
@@ -96,6 +148,7 @@ class StudentManager {
    */
   getStudentsByClass(className) {
     // Implementasi method di sini (BONUS)
+    return this.students.filter((s) => s.class === className);
   }
 
   /**
@@ -105,6 +158,22 @@ class StudentManager {
    */
   getClassStatistics(className) {
     // Implementasi method di sini (BONUS)
+    const students = this.getStudentsByClass(className);
+
+    if (students.length === 0) {
+      return {
+        message: "Tidak ada siswa dalam kelas ini.",
+      };
+    }
+
+    const avgClass =
+      students.reduce((sum, s) => sum + s.getAverage(), 0) /
+      students.length;
+
+    return {
+      totalStudents: students.length,
+      averageClassScore: avgClass.toFixed(2),
+    };
   }
 }
 

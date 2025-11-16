@@ -50,6 +50,17 @@ function addNewStudent() {
   // Implementasi di sini
   console.log('\n--- Tambah Siswa Baru ---');
   // TODO: Lengkapi implementasi
+  const id = readlineSync.question('Masukkan ID Siswa: ');
+  const name = readlineSync.question('Masukkan Nama Siswa: ');
+  const className = readlineSync.question('Masukkan Kelas Siswa (misal 10A): ');
+
+  if (!id || !name || !className) {
+    console.log("Semua field harus diisi!");
+    return;
+  }
+
+  const newStudent = new Student(id, name, className);
+  manager.addStudent(newStudent);
 }
 
 /**
@@ -62,6 +73,7 @@ function viewAllStudents() {
   // Implementasi di sini
   console.log('\n--- Daftar Semua Siswa ---');
   // TODO: Lengkapi implementasi
+  manager.displayAllStudents();
 }
 
 /**
@@ -75,6 +87,15 @@ function searchStudent() {
   // Implementasi di sini
   console.log('\n--- Cari Siswa ---');
   // TODO: Lengkapi implementasi
+  const id = readlineSync.question('Masukkan ID Siswa: ');
+
+  const student = manager.findStudent(id);
+
+  if (!student) {
+    console.log("Siswa tidak ditemukan.");
+  } else {
+    student.displayInfo();
+  }
 }
 
 /**
@@ -89,6 +110,25 @@ function updateStudent() {
   // Implementasi di sini
   console.log('\n--- Update Data Siswa ---');
   // TODO: Lengkapi implementasi
+  const id = readlineSync.question('Masukkan ID Siswa yang akan diupdate: ');
+
+  const student = manager.findStudent(id);
+  if (!student) {
+    console.log("Siswa tidak ditemukan.");
+    return;
+  }
+
+  console.log("\nData saat ini:");
+  student.displayInfo();
+
+  const newName = readlineSync.question('Masukkan Nama Baru (kosong = tidak diubah): ');
+  const newClass = readlineSync.question('Masukkan Kelas Baru (kosong = tidak diubah): ');
+
+  const data = {};
+  if (newName) data.name = newName;
+  if (newClass) data.class = newClass;
+
+  manager.updateStudent(id, data);
 }
 
 /**
@@ -102,6 +142,15 @@ function deleteStudent() {
   // Implementasi di sini
   console.log('\n--- Hapus Siswa ---');
   // TODO: Lengkapi implementasi
+  const id = readlineSync.question('Masukkan ID Siswa yang akan dihapus: ');
+
+  const confirm = readlineSync.question('Yakin ingin menghapus? (y/n): ');
+
+  if (confirm.toLowerCase() === 'y') {
+    manager.removeStudent(id);
+  } else {
+    console.log("Penghapusan dibatalkan.");
+  }
 }
 
 /**
@@ -116,6 +165,24 @@ function addGradeToStudent() {
   // Implementasi di sini
   console.log('\n--- Tambah Nilai Siswa ---');
   // TODO: Lengkapi implementasi
+  const id = readlineSync.question('Masukkan ID Siswa: ');
+  const student = manager.findStudent(id);
+
+  if (!student) {
+    console.log("Siswa tidak ditemukan.");
+    return;
+  }
+
+  student.displayInfo();
+
+  const subject = readlineSync.question('Masukkan Nama Mata Pelajaran: ');
+  const score = Number(readlineSync.question('Masukkan Nilai (0-100): '));
+
+  const success = student.addGrade(subject, score);
+
+  if (success) {
+    console.log("Nilai berhasil ditambahkan.");
+  }
 }
 
 /**
@@ -128,6 +195,14 @@ function viewTopStudents() {
   // Implementasi di sini
   console.log('\n--- Top 3 Siswa ---');
   // TODO: Lengkapi implementasi
+  const topStudents = manager.getTopStudents(3);
+
+  if (topStudents.length === 0) {
+    console.log("Belum ada data siswa.");
+    return;
+  }
+
+  topStudents.forEach((student) => student.displayInfo());
 }
 
 /**
@@ -149,6 +224,37 @@ function main() {
     // Baca pilihan user
     // Jalankan action sesuai pilihan
     // TODO: Lengkapi implementasi
+    displayMenu();
+    const choice = readlineSync.question('Pilih menu (1-8): ');
+
+    switch (choice) {
+      case '1':
+        addNewStudent();
+        break;
+      case '2':
+        viewAllStudents();
+        break;
+      case '3':
+        searchStudent();
+        break;
+      case '4':
+        updateStudent();
+        break;
+      case '5':
+        deleteStudent();
+        break;
+      case '6':
+        addGradeToStudent();
+        break;
+      case '7':
+        viewTopStudents();
+        break;
+      case '8':
+        running = false;
+        break;
+      default:
+        console.log('Pilihan tidak valid!');
+    }
     
     // Hint: gunakan switch-case untuk handle berbagai pilihan
   }
